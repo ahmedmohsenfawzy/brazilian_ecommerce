@@ -5,11 +5,11 @@ with cte as(
 select
     product_id,
     product_category_name,
-    product_name_lenght,
-    product_description_lenght,
-    product_photos_qty,
-    product_weight_g,
-    product_length_cm,
-    product_height_cm,
-    product_width_cm
+    {{convert_datatype('product_name_lenght', 'float')}} as product_name_lenght,
+    {{convert_datatype('product_description_lenght', 'float')}} as product_description_lenght,
+    {{convert_datatype('product_photos_qty', 'float')}} as product_photos_qty,
+    {{convert_datatype('product_weight_g', 'float')}} as product_weight_g,
+    {{convert_datatype('product_length_cm', 'float')}} as product_length_cm,
+    {{convert_datatype('product_height_cm', 'float')}} as product_height_cm,
+    {{convert_datatype('product_width_cm', 'float')}} as product_width_cm
 from cte

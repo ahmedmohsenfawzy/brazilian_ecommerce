@@ -9,5 +9,5 @@ select
     seller_id,
     price,
     freight_value,
-    shipping_limit_date
+    {{convert_datatype('shipping_limit_date', 'timestamp')}} as shipping_limit_date
 from cte

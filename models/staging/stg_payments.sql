@@ -4,8 +4,8 @@ with cte as(
 
 select
     order_id,
-    payment_sequential,
+    {{convert_datatype('payment_sequential', 'smallint')}}  as payment_sequential,
     payment_type,
-    payment_installments,
-    payment_value
+    {{convert_datatype('payment_installments', 'smallint')}} as payment_installments,
+    {{convert_datatype('payment_value', 'float')}} as payment_value
 from cte

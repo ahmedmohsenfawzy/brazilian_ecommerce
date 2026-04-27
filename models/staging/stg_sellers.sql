@@ -4,7 +4,7 @@ with cte as(
 
 select
     seller_id,
-    seller_zip_code_prefix,
+    {{convert_datatype('seller_zip_code_prefix','int')}} as seller_zip_code_prefix,
     seller_city,
     seller_state
 from cte

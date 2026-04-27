@@ -33,4 +33,12 @@ models:
   brazilian_ecommerce:
     # Config indicated by + and applies to all files under models/example/
     +file_format: delta
-    +materialized: table
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: view
+      +schema: intermediate
+    marts:
+      +materialized: table
+      +schema: marts
