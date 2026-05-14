@@ -7,7 +7,7 @@ sources:
     tables:
       - name: customers
         identifier: raw_customers
-
+        
       - name: geolocation
         identifier: raw_geolocation
 

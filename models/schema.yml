@@ -1,0 +1,179 @@
+models:
+    - name: stg_customers
+      columns:
+        - name: customer_SK
+          data_tests: 
+            - not_null
+            - unique   
+        
+        - name: customer_BK
+          data_tests:
+            - not_null
+        
+        - name: customer_zip_code_prefix
+          data_tests:
+            - relationships:
+                arguments:
+                    to: ref('stg_geolocation')
+                    field:  geolocation_zip_code_prefix
+                    config:
+                        severity: warn
+
+    - name: stg_geolocation
+      columns:
+        - name: geolocation_zip_code_prefix
+          data_tests:
+            - not_null
+
+        - name: geolocation_lat
+          data_tests:
+            - dbt_expectations.expect_column_values_to_be_between:
+                min_value: -40 
+                max_value: 50
+        - name: geolocation_lng
+          data_tests:
+            - dbt_expectations.expect_column_values_to_be_between:
+                min_value: -110 
+                max_value: 130
+
+    - name: stg_order_items
+      columns:
+        - name: order_id
+          data_tests:
+            - not_null
+
+        - name: product_id
+          data_tests:
+            - relationships:
+                arguments:
+                    to: ref('stg_products')
+                    field:  product_id
+                    config:
+                        severity: warn
+        - name: seller_id
+          data_tests:
+            - relationships:
+                arguments:
+                    to: ref('stg_sellers')
+                    field:  seller_id
+                    config:
+                        severity: warn
+        
+        - name: price
+          data_tests:
+            - dbt_expectations.expect_column_values_to_be_between:
+                min_value: -1 
+        - name: freight_value
+          data_tests:
+            - dbt_expectations.expect_column_values_to_be_between:
+                min_value: -1 
+        
+
+    - name: stg_orders
+      columns:
+        - name: order_id
+          data_tests:
+            - not_null
+            - unique
+
+        - name: customer_SK
+          data_tests:
+            - relationships:
+                arguments:
+                    to: ref('stg_customers')
+                    field:  customer_SK
+                    config:
+                        severity: warn
+        - name: order_status
+          data_tests:
+            - accepted_values:
+                arguments: 
+                    values: ['invoiced','processing','shipped','unavailable','approved','delivered','canceled','created']
+        
+
+    - name: stg_payments
+      columns:
+        - name: order_id
+          data_tests:
+            - not_null
+            - relationships:
+                arguments:
+                    to: ref('stg_orders')
+                    field:  order_id
+                    config:
+                        severity: warn
+        - name: payment_type
+          data_tests:
+            - accepted_values:
+                arguments: 
+                    values: ['credit_card','voucher','boleto','debit_card','not_defined']
+        - name: payment_value
+          data_tests:
+            - dbt_expectations.expect_column_values_to_be_between:
+                min_value: -1      
+
+    - name: stg_products
+      columns:
+        - name: product_id
+          data_tests:
+            - not_null
+            - unique
+        - name: product_weight_g
+          data_tests:
+            - dbt_expectations.expect_column_quantile_values_to_be_between:
+                quantile: .95
+                min_value: 0  
+        - name: product_length_cm
+          data_tests:
+            - dbt_expectations.expect_column_quantile_values_to_be_between:
+                quantile: .95
+                min_value: 0  
+        - name: product_height_cm
+          data_tests:
+            - dbt_expectations.expect_column_quantile_values_to_be_between:
+                quantile: .95    
+                min_value: 0      
+       
+        - name: product_width_cm
+          data_tests:
+            - dbt_expectations.expect_column_quantile_values_to_be_between:
+                quantile: .95  
+                min_value: 0      
+
+    - name: stg_reviews
+      columns:
+        - name: review_id
+          data_tests:
+            - not_null
+            - unique
+
+        - name: order_id
+          data_tests:
+            - not_null
+            - relationships:
+                arguments:
+                    to: ref('stg_orders')
+                    field:  order_id
+                    config:
+                        severity: warn
+
+        - name: review_score
+          data_tests:
+            - dbt_expectations.expect_column_values_to_be_between:
+                min_value: 1
+                max_value: 5
+
+    - name: stg_sellers
+      columns:
+        - name: seller_id
+          data_tests:
+            - not_null
+
+        - name: seller_zip_code_prefix
+          data_tests:
+            - relationships:
+                arguments:
+                    to: ref('stg_geolocation')
+                    field:  geolocation_zip_code_prefix
+                    config:
+                        severity: warn
